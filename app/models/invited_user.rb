@@ -4,7 +4,7 @@ class InvitedUser < ApplicationRecord
   enum :status => [:pending,:confirmed,:unconfirmed]
   validates :link,
             presence: {message: "Поле не должно быть пустым"},
-            uniqueness: {scope: :link,message: "Такой юзер уже есть"},
-            format: {with: /\A[^А-Яа-я]+\z/,message: "Допускаются только латинские буквы"}
-    
+            format: {with: /\A[^А-Яа-я]+\z/,message: "Допускаются только латинские буквы"},
+            uniqueness: {scope: :link,message: "Такой юзер уже есть"}
+            
 end
