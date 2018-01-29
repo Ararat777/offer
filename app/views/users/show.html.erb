@@ -1,0 +1,111 @@
+<h2 class="text-center"><%= current_user.username %></h2>
+<div class="container">
+  <div class="row">
+    <% @soc_networks.each do |item| %>
+    <div class="col-md-4">
+      <h4 class="text-center"><%= item.title %></h4>
+      <% if soc_link = item.soc_user_links.find_by(:user_id => current_user.id) %>
+        <p class="text-primary text-center">
+          Your nick: <%= soc_link.link %>
+          <% if soc_link.status == 'confirmed' %>
+          <i class="fa fa-check text-success" aria-hidden="true"></i>
+          <% elsif soc_link.status == 'unconfirmed' %>
+          <i class="fa fa-ban text-danger" aria-hidden="true"></i>
+          <% else %>
+          <i class="fa fa-spinner text-primary" aria-hidden="true"></i>
+          <% end %>
+        </p>
+        <%= form_for :invited_user,url: invited_users_path do |f| %>
+          <%= f.hidden_field :soc_id,value: item.id %>
+          <%= f.label :user_link %>
+          <%= f.text_field :link %>
+          <%= f.submit :add_user %>
+        <% end %>
+      <% else %>
+        <%= form_for :soc_user_link,url: soc_user_links_path do |f| %>
+         <%= f.hidden_field :soc_id,value: item.id %>
+         <%= f.label :link %>
+         <%= f.text_field :link %>
+         <%= f.submit :send %>
+        <% end %>
+      <% end %>
+      <% if @user && @user.errors && @user.soc_network_id == item.id %>
+      <p class="text-danger">
+        <%= @user.errors.values.flatten.first %>
+      </p>
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row">
+        <% @soc_networks.each do |item| %>
+        <div class="col-md-4">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th><%= item.title %></th>
+                <th class="text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% item.invited_users.where(:user_id => current_user.id).each_with_index do |user,i| %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td><%= user.link %></td>
+                <td class="text-center">
+                  <% if user.status == 'confirmed' %>
+                  <i class="fa fa-check text-success" aria-hidden="true"></i>
+                  <% elsif user.status == 'unconfirmed' %>
+                  <i class="fa fa-ban text-danger" aria-hidden="true"></i>
+                  <% else %>
+                  <i class="fa fa-spinner text-primary" aria-hidden="true"></i>
+                  <% end %>
+                </td>
+              </tr>
+              <% end %>
+              <tr>
+                <td colspan="2">
+                  Accepted:
+                </td>
+                <td class="text-center">
+                  <%= item.invited_users.where(:user_id => current_user.id,:status => "confirmed",:soc_network_id => item.id).size %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <h3 class="text-center">Top Users</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Insta</th>
+            <th>Telegram</th>
+            <th>Facebook</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+          <tr>
+            <td><%= user.username %></td>
+            <% @soc_networks.each do |item| %>
+            <td><%= user.invited_users.where(:status => "confirmed", :soc_network_id => item.id).size %></td>
+            <% end %>
+            <td><%= user.invited_users.where(:status => "confirmed").size %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

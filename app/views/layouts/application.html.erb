@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Offer</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+  <body>
+    <nav class="container-fluid">
+      <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+          <h1 class="text-center">Cryptoboom Offer</h1>
+        </div>
+        <div class="col-md-4 text-center">
+          <% if user_signed_in? %>
+          <%= link_to "Cabinet", cabinet_path %>|<%= link_to "Log Out", destroy_user_session_path,method: :delete %>
+          <% else %>
+          <%= link_to "Log In", new_user_session_path %>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+    <%= yield %>
+  </body>
+</html>
