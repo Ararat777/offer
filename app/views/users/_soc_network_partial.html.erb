@@ -1,0 +1,76 @@
+<h4 class="text-center"><%= soc_network.title %></h4>
+<% if soc_link = soc_network.soc_user_links.find_by(:user_id => current_user.id) %>
+  <% if soc_link.status == "confirmed" %>
+    <p class="text-primary text-center">
+        Your nick: <%= soc_link.link %> <i class="fa fa-check text-success" aria-hidden="true"></i>
+    </p>
+    <%= form_for :invited_user,url: invited_users_path,remote: true do |f| %>
+        <%= f.hidden_field :soc_id,value: soc_network.id %>
+        <%= f.label :user_link %>
+        <%= f.text_field :link %>
+        <%= f.submit :add_user %>
+    <% end %>
+  <% elsif soc_link.status == "pending" %>
+    <p class="text-primary text-center">
+        Your nick: <%= soc_link.link %> <i class="fa fa-spinner text-primary" aria-hidden="true"></i>
+    </p>
+    <p class="text-primary">Пожалуйста ожидайте пока подтвердится ваша подписка</p>
+  <% elsif soc_link.status == "unconfirmed" %>
+    <p class="text-primary text-center">
+        Your nick: <%= soc_link.link %> <i class="fa fa-ban text-danger" aria-hidden="true"></i>
+    </p>
+    <p class="text-danger">Извините но мы не обнаружили вас среди наших подписчиков</p>
+    <%= form_for :soc_user_link,url: soc_user_links_path,remote: true do |f| %>
+     <%= f.hidden_field :soc_id,value: soc_network.id %>
+     <%= f.label :link %>
+     <%= f.text_field :link %>
+     <%= f.submit :send %>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= form_for :soc_user_link,url: soc_user_links_path,remote: true do |f| %>
+   <%= f.hidden_field :soc_id,value: soc_network.id %>
+   <%= f.label :link %>
+   <%= f.text_field :link %>
+   <%= f.submit :send %>
+  <% end %>
+<% end %>
+<% if @error %>
+<p class="text-danger">
+  <%= @error.values.flatten.first %>
+</p>
+<% end %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th><%= soc_network.title %></th>
+      <th class="text-center">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% soc_network.invited_users.where(:user_id => current_user.id).each_with_index do |user,i| %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= user.link %></td>
+      <td class="text-center">
+        <% if user.status == 'confirmed' %>
+        <i class="fa fa-check text-success" aria-hidden="true"></i>
+        <% elsif user.status == 'unconfirmed' %>
+        <i class="fa fa-ban text-danger" aria-hidden="true"></i>
+        <% else %>
+        <i class="fa fa-spinner text-primary" aria-hidden="true"></i>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+    <tr>
+      <td colspan="2">
+        Accepted:
+      </td>
+      <td class="text-center">
+        <%= soc_network.invited_users.where(:user_id => current_user.id,:status => "confirmed",:soc_network_id => soc_network.id).size %>
+      </td>
+    </tr>
+  </tbody>
+</table>

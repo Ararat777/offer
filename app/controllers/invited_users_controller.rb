@@ -4,15 +4,14 @@ class InvitedUsersController < ApplicationController
     if @user = @soc_network.invited_users.find_by(:link => permitted_params[:link],:status => 'unconfirmed')
       @user.status = 0
       @user.save
-      redirect_to cabinet_path
+      simple_respond
     else
       @user = @soc_network.invited_users.new(:link => permitted_params[:link], :user_id => current_user.id)
       if @user.save
-        redirect_to cabinet_path
+         simple_respond
       else
-         @soc_networks = SocNetwork.all
-         @users = User.all
-        render 'users/show'
+         @error = @user.errors
+         simple_respond
       end
     end
   end
@@ -20,5 +19,10 @@ class InvitedUsersController < ApplicationController
   private
   def permitted_params
     params.require(:invited_user).permit(:soc_id,:link)
+  end
+  def simple_respond
+    respond_to do |format|
+      format.js {}
+    end
   end
 end
