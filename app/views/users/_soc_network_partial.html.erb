@@ -4,11 +4,12 @@
     <p class="text-primary text-center">
         Your nick: <%= soc_link.link %> <i class="fa fa-check text-success" aria-hidden="true"></i>
     </p>
-    <%= form_for :invited_user,url: invited_users_path,remote: true do |f| %>
+    <%= form_for :invited_user,url: invited_users_path,:html => {class: 'form-inline'},remote: true do |f| %>
         <%= f.hidden_field :soc_id,value: soc_network.id %>
-        <%= f.label :user_link %>
-        <%= f.text_field :link %>
-        <%= f.submit :add_user %>
+      <div class="form-group mx-sm-3 mr-1">
+        <%= f.text_field :link,class: 'form-control',placeholder: "Введите юзернейм" %>
+      </div>
+        <%= f.submit :add_user,class: 'form-control btn btn-success' %>
     <% end %>
   <% elsif soc_link.status == "pending" %>
     <p class="text-primary text-center">
@@ -20,19 +21,21 @@
         Your nick: <%= soc_link.link %> <i class="fa fa-ban text-danger" aria-hidden="true"></i>
     </p>
     <p class="text-danger">Извините но мы не обнаружили вас среди наших подписчиков</p>
-    <%= form_for :soc_user_link,url: soc_user_links_path,remote: true do |f| %>
+    <%= form_for :soc_user_link,url: soc_user_links_path,:html => {class: 'form-inline'},remote: true do |f| %>
      <%= f.hidden_field :soc_id,value: soc_network.id %>
-     <%= f.label :link %>
-     <%= f.text_field :link %>
-     <%= f.submit :send %>
+     <div class="form-group">
+        <%= f.text_field :link,class: 'form-control' %>
+      </div>
+     <%= f.submit :send,class: 'form-control btn btn-success' %>
     <% end %>
   <% end %>
 <% else %>
-  <%= form_for :soc_user_link,url: soc_user_links_path,remote: true do |f| %>
+  <%= form_for :soc_user_link,url: soc_user_links_path,:html => {class: 'form-inline'},remote: true do |f| %>
    <%= f.hidden_field :soc_id,value: soc_network.id %>
-   <%= f.label :link %>
-   <%= f.text_field :link %>
-   <%= f.submit :send %>
+   <div class="form-group">
+        <%= f.text_field :link,class: 'form-control' %>
+      </div>
+   <%= f.submit :send,class: 'form-control btn btn-success' %>
   <% end %>
 <% end %>
 <% if @error %>
